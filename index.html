@@ -62,7 +62,9 @@
             doc.text("Price: ₹" + totalPrice, 20, 70);
             doc.text("Total: ₹" + totalPrice, 20, 80);
             
-            doc.save("invoice.pdf");
+            doc.save("invoice.pdf"); // Saves the PDF
+
+            alert("Invoice PDF generated! Now send it via WhatsApp.");
         }
         
         function sendWhatsApp() {
@@ -70,15 +72,15 @@
             let customerName = document.getElementById("customerName").value || "Customer";
             let service = document.getElementById("service").value || "Service";
             let totalPrice = document.getElementById("totalPrice").innerText;
-            
+
             if (!clientNumber) {
                 alert("Please enter a valid client number.");
                 return;
             }
             
-            let message = `Hello ${customerName}, your invoice is ready. Service: ${service}, Total: ₹${totalPrice}`;
+            let message = `Hello ${customerName}, your invoice is ready. Please check your downloaded PDF file.\nService: ${service}\nTotal: ₹${totalPrice}`;
             let whatsappURL = `https://wa.me/${clientNumber}?text=${encodeURIComponent(message)}`;
-            window.open(whatsappURL, "_blank");
+            window.open(whatsappURL, "_blank"); // Opens WhatsApp with message
         }
         
         window.onload = function() {
