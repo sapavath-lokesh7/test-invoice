@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Invoice Generator</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    <style>
+        body { font-family: Arial, sans-serif; text-align: center; }
+        .invoice-container { width: 60%; margin: auto; padding: 20px; border: 1px solid #ddd; }
+        table { width: 100%; border-collapse: collapse; margin-top: 10px; }
+        table, th, td { border: 1px solid black; }
+        th, td { padding: 10px; text-align: left; }
+        button { margin-top: 10px; padding: 10px; cursor: pointer; }
+    </style>
+</head>
+<body>
+    <h2>Photography Invoice Generator</h2>
+    <div class="invoice-container" id="invoice">
+        <h3>Invoice</h3>
+        <p><strong>Customer Name:</strong> <input type="text" id="customerName"></p>
+        <p><strong>Client Number:</strong> <input type="text" id="clientNumber"></p>
+        <p><strong>Date:</strong> <input type="date" id="invoiceDate"></p>
+        
+        <table>
+            <tr>
+                <th>Service</th>
+                <th>Price (₹)</th>
+            </tr>
+            <tr>
+                <td><input type="text" id="service"></td>
+                <td><input type="number" id="price" oninput="updateTotal()"></td>
+            </tr>
+        </table>
+        <p><strong>Total:</strong> ₹<span id="totalPrice">0.00</span></p>
+    </div>
+    <button onclick="generatePDF()">Download Invoice</button>
+    <button onclick="sendWhatsApp()">Send via WhatsApp</button>
+    
+    <script>
+        function updateTotal() {
+            let price = document.getElementById("price").value;
+            document.getElementById("totalPrice").innerText = price ? parseFloat(price).toFixed(2) : "0.00";
+        }
+        
+        function generatePDF() {
+            const { jsPDF } = window.jspdf;
+            const doc = new jsPDF();
+            
+            let customerName = document.getElementById("customerName").value || "N/A";
+            let clientNumber = document.getElementById("clientNumber").value || "N/A";
+            let invoiceDate = document.getElementById("invoiceDate").value || "N/A";
+            let service = document.getElementById("service").value || "N/A";
+            let price = document.getElementById("price").value || "0.00";
+            let totalPrice = parseFloat(price).toFixed(2);
+            
+            doc.text("Photography Invoice", 20, 20);
+            doc.text("Customer: " + customerName, 20, 30);
+            doc.text("Client Number: " + clientNumber, 20, 40);
+            doc.text("Date: " + invoiceDate, 20, 50);
+            doc.text("Service: " + service, 20, 60);
+            doc.text("Price: ₹" + totalPrice, 20, 70);
+            doc.text("Total: ₹" + totalPrice, 20, 80);
+            
+            doc.save("invoice.pdf");
+        }
+        
+        function sendWhatsApp() {
+            let clientNumber = document.getElementById("clientNumber").value.trim();
+            let customerName = document.getElementById("customerName").value || "Customer";
+            let service = document.getElementById("service").value || "Service";
+            let totalPrice = document.getElementById("totalPrice").innerText;
+            
+            if (!clientNumber) {
+                alert("Please enter a valid client number.");
+                return;
+            }
+            
+            let message = `Hello ${customerName}, your invoice is ready. Service: ${service}, Total: ₹${totalPrice}`;
+            let whatsappURL = `https://wa.me/${clientNumber}?text=${encodeURIComponent(message)}`;
+            window.open(whatsappURL, "_blank");
+        }
+        
+        window.onload = function() {
+            if (!window.jspdf) {
+                alert("jsPDF failed to load. Please check your internet connection and try again.");
+            }
+        };
+    </script>
+</body>
+</html>
